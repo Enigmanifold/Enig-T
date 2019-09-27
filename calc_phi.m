@@ -1,4 +1,11 @@
-run('epipole_theta_to_RT.m');
+run('generate_RT.m');
+e1=R'*T;
+e1=e1/e1(3);
+e2=T/T(3);
+ptsnum=size(DPoints,2);
+ptsnum=2000;
+p1_to_e1=p1(:,1:ptsnum)-repmat(e1,1,ptsnum);
+p2_to_e2=p2(:,1:ptsnum)-repmat(e2,1,ptsnum);
 gamma_cross_e=zeros(3,ptsnum);
 gamma_cross_ebar=zeros(3,ptsnum);
 e_coeff=zeros(1,ptsnum);
