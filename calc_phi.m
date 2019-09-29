@@ -24,8 +24,8 @@ function [phi1,phi2,phi1_alt,phi2_alt]=calc_phi(p1,p2,e1,e2,ptsnum)
     epi_fiesta=e_norm2/(eebar_norm+e_dot_ebar);
     for m=1:ptsnum
         N2_unnormalized=gamma_cross_e(:,m)+e_coeff(m).*e1+epi_fiesta.*e_coeff(m).*e_perp_proj;
-        numer=-p2_to_e2(:,m)'*N2_unnormalized*ebar_norm;
-        denom=p2_to_e2(:,m)'*cross(e2,N2_unnormalized);
+        numer=-p2(:,m)'*N2_unnormalized*ebar_norm;
+        denom=p2(:,m)'*cross(e2,N2_unnormalized);
         tanphi1=numer/denom;
         ph1_new=atan(tanphi1);
         if ph1_new<0
