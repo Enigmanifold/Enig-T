@@ -320,10 +320,10 @@ end
 %     % end
 % % end
 % 
-% % for m=1:tlen
-% %     figure
-% %     bar3(minstdmultiarray(:,:,m))
-% % end
+for m=1:tlen
+    figure
+    bar3(minstdmultiarray(:,:,m))
+end
 % % for m=1:tlen
 % %     figure
 % %     histogram(minstdmultiarray(m,:,34),50)
@@ -338,3 +338,24 @@ end
 % %     xlabel('epipole error')
 % %     ylabel('sum of std')
 % % end
+% total_cell3={};
+% for m=1:250000
+%     total_cell3{m,:}=total_cell{m*2-1,:};
+% end
+scatter(p1(1,1:20),p1(2,1:20),'b')
+hold on
+scatter(e1(1),e1(2),'r');
+title('Image points for Cam1')
+xlabel('x')
+ylabel('y')
+legend('Image points', 'Ground truth epipoles')
+hold off
+figure
+scatter(p2(1,1:20),p2(2,1:20))
+hold on
+scatter(e2(1),e2(2),'r');
+title('Image points for Cam2')
+xlabel('x')
+ylabel('y')
+legend('Image points', 'Ground truth epipoles')
+hold off

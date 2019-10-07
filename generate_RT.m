@@ -1,21 +1,30 @@
-clear; clc; close all;
-rng(0);
+% clear; clc; close all;
 %% Generate random Camera Pose
 flag = 0;
 while (flag == 0)
-Temp = normrnd(0,1,[3,3]);
-[R,Q] = qr(Temp);
-
-% R = [0.9418, -0.2457, 0.2296;
-%        0.2602, 0.9649, -0.0344;
-%        -0.2131, 0.0921, 0.9727];
-tP = (rand([1,2]) - 0.5) * 360; %[32,13];
-tP = deg2rad(tP);
-T = [cos(tP(1)) * cos(tP(2)); cos(tP(1)) * sin(tP(2)); sin(tP(1))].*1;%For predefined translation and rotation
+% Temp = normrnd(0,1,[3,3]);
+% [R,Q] = qr(Temp);
+% 
+% % R = [0.9418, -0.2457, 0.2296;
+% %        0.2602, 0.9649, -0.0344;
+% %        -0.2131, 0.0921, 0.9727];
+% tP = (rand([1,2]) - 0.5) * 360; %[32,13];
+% tP = deg2rad(tP);
+% T = [cos(tP(1)) * cos(tP(2)); cos(tP(1)) * sin(tP(2)); sin(tP(1))].*1;%For predefined translation and rotation
 % T = [0.630871660447047;0.720028341825237;0.289067699705772]
 % T=-T;
 %  T = [0.1;0;1];
 %  eulRot = [0.2, 0.1, 0.2];
+%% Generate random Camera Pose using epipoles and phi.
+u1r=rand*3;
+u2r=rand*3;
+u1th=rand*2*pi;
+u2th=rand*2*pi;
+e1=[u1r*cos(u1th);u1r*sin(u1th);1];
+e2=[u2r*cos(u2th);u2r*sin(u2th);1];
+phi=rand*2*pi;
+T_scale=randsample(2,1)*2-3;
+[R,T]=epipoles_phi_to_RT(e1,e2,phi,0.5,T_scale);
 
 %R = eul2rotmatrix(eulRot,'ZYX');
 % intrinsic matrix K is pre-defined & Also the image size is pre-defined.
