@@ -1,6 +1,6 @@
-function [minc0std,minc0stdind]=calc_phi3(epi12_sph,p1,p2,ptsnum,diff_amplifier)
-    epi1_plane=[tan(epi12_sph(1))*cos(epi12_sph(2));tan(epi12_sph(1))*sin(epi12_sph(2));1];
-    epi2_plane=[tan(epi12_sph(3))*cos(epi12_sph(4));tan(epi12_sph(3))*sin(epi12_sph(4));1];
+function [minc0std,minc0stdind]=calc_phi3_epi1known(epi2_sph,epi1_sph,p1,p2,ptsnum,diff_amplifier)
+    epi1_plane=[tan(epi1_sph(1))*cos(epi1_sph(2));tan(epi1_sph(1))*sin(epi1_sph(2));1];
+    epi2_plane=[tan(epi2_sph(1))*cos(epi2_sph(2));tan(epi2_sph(1))*sin(epi2_sph(2));1];
     [phi1,phi2,phi1_alt,phi2_alt]=calc_phi(p1(:,1:ptsnum),p2(:,1:ptsnum),epi1_plane,epi2_plane,ptsnum);
     phis=[phi1;phi2;phi1_alt;phi2_alt];
     phis_c0=-ones(4,ptsnum);

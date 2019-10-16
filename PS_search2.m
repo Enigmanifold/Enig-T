@@ -19,13 +19,14 @@ if e2(1)<0
         e2Phi=e2Phi-2*pi;
     end
 end
-e12=[e1Theta,e1Phi,e2Theta,e2Phi].*180./pi;
+e12=[e1Theta,e1Phi,e2Theta,e2Phi];
+epi1_sph=e12(1:2)';
 ptsnum=30;
 diff_amplifier=1000000;
-nvars=4;
-lb=[0,-pi,0,-pi];
-ub=[pi/2-0.01,pi,pi/2-0.01,pi];
-fun=@(x)calc_phi3(x,p1,p2,ptsnum,diff_amplifier);
+nvars=2;
+lb=[0,-pi];
+ub=[pi/2-0.01,pi];
+fun=@(x)calc_phi3_epi1known(x,epi1_sph,p1,p2,ptsnum,diff_amplifier);
 options = optimoptions('particleswarm','SwarmSize',10000,'FunctionTolerance',1e-11);
 flag=1;
 xstd=[];
@@ -37,8 +38,5 @@ while flag
         flag=0;
     end
     counter=counter+1;
-    if counter > 300
-        flag=0;
-    end
 end
-sorted_xstd=sortrows(xstd,5);
+sorted_xstd=sortrows(xstd,3);
