@@ -1,14 +1,15 @@
-function sph_pts=gen_sph_iso_pts(sph_pt,psi,ptsnum)
-% Generate spherically isometric points w.r.t. sph_pt, specified by angular distance to sph_pt, psi, and the number of points generated, ptsnum.
+function sph_pts=gen_sph_iso_pts(rot_matrix,psi,ptsnum)
+% Generate spherically isometric points w.r.t. theta=0, then rotate
+% according to rot_matrix.
     sph_pts=zeros(2,ptsnum);
     % theta_err=psi;
     phis=linspace(0,2*pi*(1-1/ptsnum),ptsnum);
-    rot_axis=cross([0,0,1],[sin(sph_pt(1))*cos(sph_pt(2)),sin(sph_pt(1))*sin(sph_pt(2)),cos(sph_pt(1))]);
-    rot_axis=rot_axis./norm(rot_axis);
-    %rot_angle=phi;
-    rot_axis_cross=cross_matrix(rot_axis);
-    rot_axis_cross2=rot_axis_cross*rot_axis_cross;
-    rot_matrix=eye(3)+sin(sph_pt(1)).*rot_axis_cross+(1-cos(sph_pt(1))).*rot_axis_cross2;
+%     rot_axis=cross([0,0,1],[sin(sph_pt(1))*cos(sph_pt(2)),sin(sph_pt(1))*sin(sph_pt(2)),cos(sph_pt(1))]);
+%     rot_axis=rot_axis./norm(rot_axis);
+%     %rot_angle=phi;
+%     rot_axis_cross=cross_matrix(rot_axis);
+%     rot_axis_cross2=rot_axis_cross*rot_axis_cross;
+%     rot_matrix=eye(3)+sin(sph_pt(1)).*rot_axis_cross+(1-cos(sph_pt(1))).*rot_axis_cross2;
     for m=1:ptsnum
         dev_carte=[sin(psi)*cos(phis(m));sin(psi)*sin(phis(m));cos(psi)];
         rot_dev_carte=rot_matrix*dev_carte;

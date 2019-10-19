@@ -30,9 +30,10 @@ betas1=linspace(0,0.5*pi/2,beta_div);
 epi2_sph_candis=cell(beta_div);
 reproj_errs={};
 reproj_errs_array=-ones(beta_div,alpha_div);
+rot_matrix=rot2sph_pt(epi2_sph);
 for m=1:beta_div
    psi1=betas1(m);
-   epi2_sph_candi=gen_sph_iso_pts(epi2_sph,psi1,alpha_div);
+   epi2_sph_candi=gen_sph_iso_pts(rot_matrix,psi1,alpha_div);
    epi2_sph_candis{m}=epi2_sph_candi;
 end
 for m=1:beta_div
@@ -47,6 +48,8 @@ for m=1:beta_div
         reproj_errs_array(m,n)=reproj_errs{end,4};
     end
 end
+rerrs_curv_along_beta=abs(diff(reproj_errs_array,2,1));
+betas1_m2=betas1(1:beta_div-2);
 % reproj_errs_array(:,1)=repmat(linspace(0,2*pi*(1-1/alpha_div),alpha_div)',beta_div,1);
 % for m=1:beta_div*alpha_div
 %     reproj_errs_array(m,2)=reproj_errs{m,2};
@@ -54,12 +57,20 @@ end
 % end
 
 [Alpha,Beta]=meshgrid(alphas1,betas1);
-sf=surf(Alpha.*180./pi,Beta.*180./pi,reproj_errs_array);
-% sf.EdgeColor='none';
+[Alpha_m2,Beta_m2]=meshgrid(alphas1,betas1_m2);
+sf1=surf(Alpha.*180./pi,Beta.*180./pi,reproj_errs_array);
+% sf1.EdgeColor='none';
 title('Reprojection error w.r.t. (\alpha,\beta)')
 xlabel('\alpha (degree)')
 ylabel('\beta (degree)')
 zlabel('s (focal length)')
+figure
+sf2=surf(Alpha_m2.*180./pi,Beta_m2.*180./pi,rerrs_curv_along_beta);
+sf2.EdgeColor='none';
+title('Curvature of RE along \beta')
+xlabel('\alpha (degree)')
+ylabel('\beta (degree)')
+zlabel('curvature (focal length/degree^2)')
 % ang_dists=-ones(psi_div,phi_div);
 % for m=1:psi_div
 %     epi2_sph_ring=epi2_sph_candis{m};
