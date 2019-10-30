@@ -2,8 +2,8 @@ run('generate_RT.m');
 ptsnum=30;
 e1s_carte=IcosahedronMesh;
 e2s_carte=IcosahedronMesh;
-k1=4;
-k2=4;
+k1=3;
+k2=3;
 e1s_carte=SubdivideSphericalMesh(e1s_carte,k1);
 e2s_carte=SubdivideSphericalMesh(e2s_carte,k2);
 e1s_sph=[];
@@ -100,14 +100,8 @@ for m=1:size(e1s_sph,2)
         total_cell{counter,4}=epi2_angdist;
         total_cell{counter,5}=epi1_plane';
         total_cell{counter,6}=epi2_plane';
-        total_cell{counter,7}=phis;
+        total_cell{counter,7}=chosen_phis;
         total_cell{counter,8}=minc0std;
         counter=counter+1;
-    end
-end
-total_cell=sortrows(total_cell,8);
-for m=1:length([total_cell{:,8}])
-    if ~isscalar(total_cell{m,8})
-        disp('m');
     end
 end

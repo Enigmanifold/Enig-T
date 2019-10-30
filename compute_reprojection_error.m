@@ -1,4 +1,4 @@
-function min_reproj_errs=compute_reprojection_error(epi1_sph,epi2_sph,phi,p1,p2)
+function min_reproj_errs=compute_reprojection_error(phi,epi1_sph,epi2_sph,p1,p2)
     ptsnum=size(p1,2);
     reproj_errs=-ones(4,ptsnum);
     [epi1_plane(1),epi1_plane(2)]=imsphere2implane(epi1_sph(1),epi1_sph(2));

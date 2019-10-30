@@ -1,20 +1,37 @@
-run('generate_RT.m');
-tol=1e-2;
-maxiter=10000;
-angle_div=4;
-alpha=0.001;
-beta = linspace(0,2*pi*(1-1/angle_div),angle_div);
+% run('generate_RT.m');
+e1Theta=acos(1/norm(e1));
+e2Theta=acos(1/norm(e2));
+e1cosTheta=cos(e1Theta);
+e1sinTheta=sin(e1Theta);
+e2cosTheta=cos(e2Theta);
+e2sinTheta=sin(e2Theta);
+e1Phi=atan(e1(2)/e1(1));
+if e1(1)<0
+    e1Phi=e1Phi+pi;
+    if e1Phi>pi
+        e1Phi=e1Phi-2*pi;
+    end
+end
+e2Phi=atan(e2(2)/e2(1));
+if e2(1)<0
+    e2Phi=e2Phi+pi;
+    if e2Phi>pi
+        e2Phi=e2Phi-2*pi;
+    end
+end
+e12=[e1Theta,e1Phi,e2Theta,e2Phi].*180./pi;
+epi1_sph=[e1Theta;e1Phi];
+epi2_sph=[e2Theta;e2Phi];
+epi12_sphgt=[epi1_sph',epi2_sph'];
 ptsnum=30;
-diff_amplifier=1000000;
 e1s_carte=IcosahedronMesh;
 e2s_carte=IcosahedronMesh;
-k1=3;
-k2=3;
+k1=2;
+k2=2;
 e1s_carte=SubdivideSphericalMesh(e1s_carte,k1);
 e2s_carte=SubdivideSphericalMesh(e2s_carte,k2);
 e1s_sph=[];
 e2s_sph=[];
-counter=1;
 e1counter=1;
 e2counter=1;
 e1Theta=acos(1/norm(e1));
@@ -24,15 +41,12 @@ e1sinTheta=sin(e1Theta);
 e2cosTheta=cos(e2Theta);
 e2sinTheta=sin(e2Theta);
 e1Phi=atan(e1(2)/e1(1));
-randr=normrnd(0,0.01,[2,ptsnum]); % Introduce noise.
-randtheta=rand(2,ptsnum).*2.*pi;
-p1noise=[randr(1,:).*cos(randtheta(1,:));randr(1,:).*sin(randtheta(1,:));zeros(1,ptsnum)];
-p2noise=[randr(2,:).*cos(randtheta(2,:));randr(2,:).*sin(randtheta(2,:));zeros(1,ptsnum)];
-p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
-p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
-fun_GDRE_epi1known=@(x)calc_phi3(x,p1,p2,ptsnum,diff_amplifier);
-options=optimset('MaxFunEvals',10000,'MaxIter',100000,'TolFun',1e-4);
-total_cell={};
+% randr=normrnd(0,0.01,[2,ptsnum]); % Introduce noise.
+% randtheta=rand(2,ptsnum).*2.*pi;
+% p1noise=[randr(1,:).*cos(randtheta(1,:));randr(1,:).*sin(randtheta(1,:));zeros(1,ptsnum)];
+% p2noise=[randr(2,:).*cos(randtheta(2,:));randr(2,:).*sin(randtheta(2,:));zeros(1,ptsnum)];
+% p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
+% p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
 if e1(1)<0
     e1Phi=e1Phi+pi;
 end
@@ -40,10 +54,7 @@ e2Phi=atan(e2(2)/e2(1));
 if e2(1)<0
     e2Phi=e2Phi+pi;
 end
-e1_sph=[e1Theta;e1Phi];
-e2_sph=[e2Theta;e2Phi];
-e1s_sph(:,1)=e1_sph;
-e2s_sph(:,1)=e2_sph;
+epi1_sph=[e1Theta;e1Phi];
 for m=1:size(e1s_carte.Points,1)
     if e1s_carte.Points(m,3)>0
         if e1s_carte.Points(m,1)~=0
@@ -78,21 +89,13 @@ for m=1:size(e2s_carte.Points,1)
     end
     e2s_sph(:,e2counter)=sph_coords;
 end
-
-    for n=1:size(e2s_sph,2)
-        epi1_sph=e1_sph;
-        epi2_sph=e2s_sph(:,n);
-        x=[epi1_sph;epi2_sph]';
-        min_val_initial=fun_GDRE_epi1known(x);
-        [xopt,fopt]=fminsearch(fun_GDRE_epi1known,x,options);
-        total_cell{counter,1}=epi1_sph';
-        total_cell{counter,2}=epi2_sph';
-        total_cell{counter,3}=xopt(1:2);
-        total_cell{counter,4}=xopt(3:4);
-        total_cell{counter,5}=min_val_initial;
-        total_cell{counter,6}=fopt;
-        counter=counter+1;
+e1s_sphsize=size(e1s_sph,2);
+e2s_sphsize=size(e2s_sph,2);
+epi12_sph=-ones(e1s_sphsize*e2s_sphsize,4);
+epi12_sphcounter=1;
+for m=1:e1s_sphsize
+    for n=1:e2s_sphsize
+        epi12_sph(epi12_sphcounter,:)=[e1s_sph(:,m)',e2s_sph(:,n)'];
+        epi12_sphcounter=epi12_sphcounter+1;
     end
-
-total_cell=sortrows(total_cell,6);
-total_array=reshape(cell2mat(total_cell(:,4)'),[2,306]).*180./pi;
+end

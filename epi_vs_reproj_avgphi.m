@@ -1,6 +1,7 @@
-% Generate random pose, using GT or PS phi and candidate epipoles to calculate
+% Generate random pose, using avg phi and candidate epipoles to calculate
 % reprojection errors.
 run('epipole_theta_to_RT.m');
+diff_amplifier=100000;
 if ~isequal(min(ind),max(ind))
     disp('inconsistent phi calculation.')
     return
@@ -22,10 +23,12 @@ if maxpsi<0.5*pi/2
     disp('maxpsi too small.');
     return
 end
+ptsnum=30;
 alpha_div=100;
 beta_div=501;
 alphas1=linspace(0,2*pi*(1-1/alpha_div),alpha_div);
 betas1=linspace(0,0.5*pi/2,beta_div);
+beta_deci=10;
 epi2_sph_candis=cell(beta_div);
 reproj_errs={};
 reproj_errs_array=-ones(beta_div,alpha_div);
@@ -35,7 +38,7 @@ rot_matrix=rot2sph_pt(epi2_sph);
 lb=0;
 ub=2*pi;
 nvars=1;
-func_RE_avg=@(x) compute_reprojection_error_avg(x,epi1_sph,epi2_sph,p1(:,1:30),p2(:,1:30));
+func_RE_avg=@(x) compute_reprojection_error_avg(x,epi1_sph,epi2_sph,p1(:,1:ptsnum),p2(:,1:ptsnum));
 
 for m=1:beta_div
    psi1=betas1(m);
@@ -46,13 +49,18 @@ for m=1:beta_div
     epi2_sph_ring=epi2_sph_candis{m};
     for n=1:alpha_div
         epi2_sph_pt=epi2_sph_ring(:,n);
-        reproj_err=compute_reprojection_error(phi,epi1_sph,epi2_sph_pt,p1(:,1:30),p2(:,1:30));
+        epi12_sph=[epi1_sph,epi2_sph_pt'];
+        [~,~,chosen_phis]=calc_phi3(epi12_sph,p1(:,1:ptsnum),p2(:,1:ptsnum),ptsnum,diff_amplifier);
+        avg_phi=sum(chosen_phis)/length(chosen_phis);
+        reproj_err=compute_reprojection_error(avg_phi,epi1_sph,epi2_sph_pt,p1(:,1:30),p2(:,1:30));
 %         [ps_phi,min_avg_reproj_err]=particleswarm(func_RE_avg,nvars,lb,ub);
 %         reproj_err=compute_reprojection_error(ps_phi,epi1_sph,epi2_sph_pt,p1(:,1:30),p2(:,1:30));
         reproj_errs{end+1,1}=epi2_sph_pt;
         reproj_errs{end,2}=betas1(m);
         reproj_errs{end,3}=reproj_err;
         reproj_errs{end,4}=sum(reproj_err)/length(reproj_err);
+        reproj_errs{end,5}=chosen_phis;
+        reproj_errs{end,6}=avg_phi;
         reproj_errs_array(m,n)=reproj_errs{end,4};
 %         reproj_errs_array(m,n)=min_avg_reproj_err;
     end
@@ -67,14 +75,21 @@ betas1_m2=betas1(1:beta_div-2);
 
 [Alpha,Beta]=meshgrid(alphas1,betas1);
 [Alpha_m2,Beta_m2]=meshgrid(alphas1,betas1_m2);
-sf1=surf(Alpha.*180./pi,Beta.*180./pi,reproj_errs_array);
+Alpha_deci=Alpha(1:beta_deci:end,:);
+Beta_deci=Beta(1:beta_deci:end,:);
+reproj_errs_array_deci=reproj_errs_array(1:beta_deci:end,:);
+Alpha_m2_deci=Alpha_m2(1:beta_deci:end,:);
+Beta_m2_deci=Beta_m2(1:beta_deci:end,:);
+rerrs_curv_along_beta_deci=rerrs_curv_along_beta(1:beta_deci:end,:);
+figure;
+sf1=surf(Alpha_deci.*180./pi,Beta_deci.*180./pi,reproj_errs_array_deci.*K(1));
 % sf1.EdgeColor='none';
 title('Reprojection error w.r.t. (\alpha,\beta)')
 xlabel('\alpha (degree)')
 ylabel('\beta (degree)')
 zlabel('s (focal length)')
 figure
-sf2=surf(Alpha_m2.*180./pi,Beta_m2.*180./pi,rerrs_curv_along_beta);
+sf2=surf(Alpha_m2_deci.*180./pi,Beta_m2_deci.*180./pi,rerrs_curv_along_beta_deci.*K(1));
 sf2.EdgeColor='none';
 title('Curvature of RE along \beta')
 xlabel('\alpha (degree)')

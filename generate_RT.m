@@ -24,8 +24,19 @@ e1=[u1r*cos(u1th);u1r*sin(u1th);1];
 e2=[u2r*cos(u2th);u2r*sin(u2th);1];
 phi=rand*2*pi;
 T_scale=randsample(2,1)*2-3;
-[R,T]=epipoles_phi_to_RT(e1,e2,phi,0.5,T_scale);
-
+[R1,R2,T1,T2]=epipoles_phi_to_RT(e1,e2,phi,T_scale);
+rnd1=rand;
+rnd2=rand;
+if rnd1 < 0.5
+    R=R1;
+else
+    R=R2;
+end
+if rnd2 < 0.5
+    T=T1;
+else
+    T=T2;
+end
 %R = eul2rotmatrix(eulRot,'ZYX');
 % intrinsic matrix K is pre-defined & Also the image size is pre-defined.
 % K =   [718.8560         0  607.1928;

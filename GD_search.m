@@ -24,14 +24,14 @@ e1sinTheta=sin(e1Theta);
 e2cosTheta=cos(e2Theta);
 e2sinTheta=sin(e2Theta);
 e1Phi=atan(e1(2)/e1(1));
-randr=normrnd(0,0.004,[2,ptsnum]); % Introduce noise.
-randtheta=rand(2,ptsnum).*2.*pi;
-p1noise=[randr(1,:).*cos(randtheta(1,:));randr(1,:).*sin(randtheta(1,:));zeros(1,ptsnum)];
-p2noise=[randr(2,:).*cos(randtheta(2,:));randr(2,:).*sin(randtheta(2,:));zeros(1,ptsnum)];
-p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
-p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
+% randr=normrnd(0,0.004,[2,ptsnum]); % Introduce noise.
+% randtheta=rand(2,ptsnum).*2.*pi;
+% p1noise=[randr(1,:).*cos(randtheta(1,:));randr(1,:).*sin(randtheta(1,:));zeros(1,ptsnum)];
+% p2noise=[randr(2,:).*cos(randtheta(2,:));randr(2,:).*sin(randtheta(2,:));zeros(1,ptsnum)];
+% p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
+% p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
 fun=@(x)calc_phi3(x,p1,p2,ptsnum,diff_amplifier);
-options=optimset('MaxFunEvals',20000,'MaxIter',maxiter,'TolFun',1e-4,'TolX',1e-5);
+options=optimset('MaxFunEvals',10000,'MaxIter',maxiter,'TolFun',1e-3);
 total_cell={};
 if e1(1)<0
     e1Phi=e1Phi+pi;
@@ -95,3 +95,4 @@ for m=1:size(e1s_sph,2)
     end
 end
 total_cell=sortrows(total_cell,6);
+total_array=reshape(cell2mat(total_cell(1:12,4)'),[2,12]).*180./pi;

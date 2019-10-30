@@ -9,7 +9,7 @@ function [PS_x,sorted_xstd]=PS_image_epi1known(epi1_sph,p1,p2,ptsnum,psruns)
     xstd=[];
     counter=1;
     while flag
-        [x,minc0std]=particleswarm(fun,nvars,lb,ub,options);
+        [x,minc0std]=particleswarm(fun,nvars,lb,ub);
         xstd(counter,:)=[x,minc0std];
         if minc0std < -10
             flag=0;

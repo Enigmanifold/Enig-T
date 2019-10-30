@@ -297,11 +297,11 @@ disp(strcat('Number of positive depths for calcR4 is ',num2str(sum(check_depth4<
 %     calcR3{m}=R2_3{m}*R1;
 %     calcR4{m}=R2_4{m}*R1;
 % end
-theta_diff=theta2-theta1;
-for m=1:ptsnum
-    if theta_diff(m)>0
-        theta_diff(m)=theta_diff(m)-2*pi;
-    end
-end
-plot(linspace(0,ptsnum-1,ptsnum),theta_diff)
+% theta_diff=theta2-theta1;
+% for m=1:ptsnum
+%     if theta_diff(m)>0
+%         theta_diff(m)=theta_diff(m)-2*pi;
+%     end
+% end
+% plot(linspace(0,ptsnum-1,ptsnum),theta_diff)
 % rerror=acos((trace(inv(calcR1{1})*calcR2)-1)/2);

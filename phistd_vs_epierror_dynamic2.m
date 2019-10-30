@@ -6,12 +6,12 @@ e1=e1/e1(3);
 e2=T/T(3);
 ptsnum=size(DPoints,2);
 ptsnum=20;
-randr=normrnd(0,1,[2,ptsnum]); % Introduce noise.
-randtheta=rand(2,ptsnum).*2.*pi;
-p1noise=[randr(1,:)+cos(randtheta(1,:));randr(1,:)+sin(randtheta(1,:));zeros(1,ptsnum)];
-p2noise=[randr(2,:)+cos(randtheta(2,:));randr(2,:)+sin(randtheta(2,:));zeros(1,ptsnum)];
-p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
-p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
+% randr=normrnd(0,1,[2,ptsnum]); % Introduce noise.
+% randtheta=rand(2,ptsnum).*2.*pi;
+% p1noise=[randr(1,:)+cos(randtheta(1,:));randr(1,:)+sin(randtheta(1,:));zeros(1,ptsnum)];
+% p2noise=[randr(2,:)+cos(randtheta(2,:));randr(2,:)+sin(randtheta(2,:));zeros(1,ptsnum)];
+% p1(:,1:ptsnum)=p1(:,1:ptsnum)+p1noise;
+% p2(:,1:ptsnum)=p2(:,1:ptsnum)+p2noise;
 mu=zeros(1,2);
 t=linspace(-50,50,100).*0.1;
 tlen=length(t);
@@ -159,7 +159,6 @@ for f=1:tlen
             minstdarray(a,b)=minstd;
         end
     end
-    phis=[phi1;phi2;phi1_alt;phi2_alt];
     minstdmultiarray(:,:,f)=minstdarray;
 %     bar3(minstdarray)
     % for m=1:tlen

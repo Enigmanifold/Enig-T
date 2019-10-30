@@ -26,13 +26,13 @@ diff_amplifier=1000000;
 nvars=2;
 lb=[0,-pi];
 ub=[pi/2-0.01,pi];
-fun=@(x)calc_phi3_epi1known(x,epi1_sph,p1,p2,ptsnum,diff_amplifier);
-options = optimoptions('particleswarm','SwarmSize',10000,'FunctionTolerance',1e-11);
+fun_PSstdphi=@(x)calc_phi3_epi1known(x,epi1_sph,p1,p2,ptsnum,diff_amplifier);
+% options = optimoptions('particleswarm','InitialSwarmMatrix',e12s_sph,'SwarmSize',size(e12s_sph,1));
 flag=1;
 xstd=[];
 counter=1;
 while flag
-    [x,minc0std]=particleswarm(fun,nvars,lb,ub);
+    [x,minc0std]=particleswarm(fun_PSstdphi,nvars,lb,ub);
     xstd(counter,:)=[x.*180./pi,minc0std];
     if minc0std < -10
         flag=0;
@@ -40,3 +40,7 @@ while flag
     counter=counter+1;
 end
 sorted_xstd=sortrows(xstd,3);
+sx_array=sorted_xstd';
+sx_array=sx_array(1:2,1:12);
+sx_array=[epi2_sph.*180./pi,sx_array];
+% total_array=reshape(cell2mat(total_cell(1:12,2)'),[4,12]);
