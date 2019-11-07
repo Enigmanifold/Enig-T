@@ -7,6 +7,7 @@ e1sinTheta=sin(e1Theta);
 e2cosTheta=cos(e2Theta);
 e2sinTheta=sin(e2Theta);
 e1Phi=atan(e1(2)/e1(1));
+phi_div=10;
 if e1(1)<0
     e1Phi=e1Phi+pi;
     if e1Phi>pi
@@ -55,7 +56,7 @@ e2Phi=atan(e2(2)/e2(1));
 if e2(1)<0
     e2Phi=e2Phi+pi;
 end
-epi1_sph=[e1Theta;e1Phi];
+phi_list=linspace(0,2*pi*(1-1/phi_div),phi_div);
 for m=1:size(e1s_carte.Points,1)
     if e1s_carte.Points(m,3)>0
         if e1s_carte.Points(m,1)~=0
@@ -92,11 +93,13 @@ for m=1:size(e2s_carte.Points,1)
 end
 e1s_sphsize=size(e1s_sph,2);
 e2s_sphsize=size(e2s_sph,2);
-epi12_sph=-ones(e1s_sphsize*e2s_sphsize,4);
-epi12_sphcounter=1;
+epiphi=-ones(e1s_sphsize*e2s_sphsize*phi_div,5);
+epiphi_counter=1;
 for m=1:e1s_sphsize
     for n=1:e2s_sphsize
-        epi12_sph(epi12_sphcounter,:)=[e1s_sph(:,m)',e2s_sph(:,n)'];
-        epi12_sphcounter=epi12_sphcounter+1;
+        for o=1:phi_div
+            epiphi(epiphi_counter,:)=[e1s_sph(:,m)',e2s_sph(:,n)',phi_list(o)];
+            epiphi_counter=epiphi_counter+1;
+        end
     end
 end
