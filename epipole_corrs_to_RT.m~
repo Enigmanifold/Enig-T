@@ -217,11 +217,10 @@ function [chosen_R,chosen_T,chosen_phi_avg,chosen_phi]=epipole_corrs_to_RT(epi12
                     case posdepth1
                         chosen_R=candi_R1;
                         chosen_phi_avg=avg_phi1_alt;
-                        chosen_phi=phi1_alt;
+                        cho
                     case posdepth2
                         chosen_R=candi_R2;
                         chosen_phi_avg=avg_phi2_alt;
-                        chosen_phi=phi2_alt;
             end
             chosen_T=T_alt;
         case 8
@@ -237,11 +236,9 @@ function [chosen_R,chosen_T,chosen_phi_avg,chosen_phi]=epipole_corrs_to_RT(epi12
                     case posdepth1
                         chosen_R=candi_R1;
                         chosen_phi_avg=avg_phi1_alt;
-                        chosen_phi=phi1_alt;
                     case posdepth2
                         chosen_R=candi_R2;
                         chosen_phi_avg=avg_phi2_alt;
-                        chosen_phi=phi2_alt;
             end
             chosen_T=T_alt;
     end

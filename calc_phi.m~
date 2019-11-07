@@ -39,15 +39,10 @@ function [phi1,phi2,phi1_alt,phi2_alt]=calc_phi(p1,p2,e1,e2,ptsnum)
         numer_alt=-p2_to_e2(:,m)'*N2_unnormalized_alt*ebar_norm;
         denom_alt=p2_to_e2(:,m)'*cross(e2,N2_unnormalized_alt);
         tanphi1_alt=numer_alt/denom_alt;
-        ph1_new1_alt=atan(tanphi1_alt);
-        ph1_new2_alt=ph1_new1_alt+pi;
-        if abs(ph1_new1_alt-pi/2)<abs(ph1_new2_alt-pi/2)
-            ph1_new_alt=ph1_new1_alt;
-        else
-            ph1_new_alt=ph1_new2_alt;
-        end
+        ph1_new_alt1=atan(tanphi1_alt);
+        
         phi1_alt(m)=ph1_new_alt;
     end
-    phi2=phi1-ones(1,ptsnum).*pi;
-    phi2_alt=phi1_alt-ones(1,ptsnum).*pi;
+    phi2=phi1+repmat(pi,1,ptsnum);
+    phi2_alt=phi1_alt+repmat(pi,1,ptsnum);
 end

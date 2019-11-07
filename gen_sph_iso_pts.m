@@ -1,6 +1,6 @@
 function sph_pts=gen_sph_iso_pts(rot_matrix,psi,ptsnum)
 % Generate spherically isometric points w.r.t. theta=0, then rotate
-% according to rot_matrix.
+% according to rot_matrix. Each ring has ptsnum points.
     sph_pts=zeros(2,ptsnum);
     % theta_err=psi;
     phis=linspace(0,2*pi*(1-1/ptsnum),ptsnum);

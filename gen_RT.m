@@ -1,4 +1,5 @@
-% clear; clc; close all;
+function [R,T,e1,e2,phi,K,p1OnImage,p2OnImage,p1ImageOnImage,p2ImageOnImage]=gen_RT
+    % clear; clc; close all;
 %% Generate random Camera Pose
 flag = 0;
 while (flag == 0)
@@ -24,13 +25,11 @@ e1_th=rand*pi/2;
 e2_th=rand*pi/2;
 e1_phi=rand*2*pi;
 e2_phi=rand*2*pi;
-e1=ones(3,1);
-e2=ones(3,1);
-[e1(1),e1(2)]=imsphere2implane(e1_th,e1_phi);
-[e2(1),e2(2)]=imsphere2implane(e2_th,e2_phi);
+e1=imsph2implane([e1_th;e1_phi]);
+e2=imsph2implane([e2_th;e2_phi]);
 % e1=[u1r*cos(u1th);u1r*sin(u1th);1];
 % e2=[u2r*cos(u2th);u2r*sin(u2th);1];
-phi=rand*2*pi;
+phi=rand*2*pi-pi;
 T_scale=randsample(2,1)*2-3;
 [R1,R2,T1,T2]=epipoles_phi_to_RT(e1,e2,phi,T_scale);
 rnd1=rand;
@@ -54,7 +53,7 @@ K = [250 0 101;
      0 250 101;
      0 0 1];
 %K = eye(3);
-imSize = [101*4, 101*4];
+imSize = [101*5, 101*5];
 
 % Build Essential Matrix tx * R
 tx = [0 -T(3) T(2);
@@ -64,9 +63,9 @@ tx = [0 -T(3) T(2);
 EGT = tx * R;
 
 %%Generate 3D Points 
-DX = (rand(1,200) - 0.5) * 5;
-DY = (rand(1,200) - 0.5) * 5;
-DZ = (rand(1,200) + 1.5) * 2;
+DX = (rand(1,2000) - 0.5) * 5;
+DY = (rand(1,2000) - 0.5) * 5;
+DZ = (rand(1,2000) + 1.5) * 2;
 DPoints = [DX; 
            DY; 
            DZ];
@@ -94,8 +93,10 @@ pointIndex = index1X & index1Y & index2X & index2Y & index3;
 DPointsOnImage = DPoints(:,pointIndex);
 p1ImageOnImage = p1Image(:,pointIndex);
 p2ImageOnImage = p2Image(:,pointIndex);
-
-if size(DPointsOnImage,2) > 4
+p1OnImage=p1(:,pointIndex);
+p2OnImage=p2(:,pointIndex);
+if size(DPointsOnImage,2) > 200
         flag = 1;
     end
+end
 end
