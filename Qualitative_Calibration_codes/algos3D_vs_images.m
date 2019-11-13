@@ -1,0 +1,65 @@
+clc;clear all;close all;
+fidCamera = fopen('/Users/tianqitang/CV_Research/images/delivery_area/rig_calibration_undistorted/cameras.txt'); % TODO: Change directory
+fidImages = fopen('/Users/tianqitang/CV_Research/images/delivery_area/rig_calibration_undistorted/images.txt'); % TODO: Change directory
+viewSelection=[640,721];
+run('helper.m');
+params = [];
+params.ratioTestRatio = 0.75;
+params.RANSACIterations = 1000;
+params.RANSACInlierDistanceThreshold = 0.5;
+path1=strcat('/Users/tianqitang/CV_Research/images/delivery_area/images/',images(viewSelection(1)).path);
+path2=strcat('/Users/tianqitang/CV_Research/images/delivery_area/images/',images(viewSelection(2)).path);
+image1 = imread(path1);
+image2 = imread(path2);
+image1 = rgb2gray(image1);
+image2 = rgb2gray(image2);
+im1 = single(image1);
+im2 = single(image2);
+[good_pairs,f1,f2,d1,d2] = find_good_pairs(im1,im2,params);
+pts_size=size(good_pairs,2);
+p1_pixel_all = [f1(1:2,good_pairs(1,:));ones(1,pts_size)];
+p2_pixel_all = [f2(1:2,good_pairs(2,:));ones(1,pts_size)];
+load('p1_pixel_all.mat');
+load('p2_pixel_all.mat');
+p1_all=[(p1_pixel_all(1,:)-ones(1,pts_size).*K1(1,3))./K1(1,1);(p1_pixel_all(2,:)-ones(1,pts_size).*K1(2,3))./K1(2,2);ones(1,pts_size)];
+p2_all=[(p2_pixel_all(1,:)-ones(1,pts_size).*K2(1,3))./K2(1,1);(p2_pixel_all(2,:)-ones(1,pts_size).*K2(2,3))./K2(2,2);ones(1,pts_size)];
+valid_pairs=[5,7,8,10,11,12,13,14,15,16,17,18,19,20,22,25,26,28,30,31,39,40,41,42,43,44,45,46,47,48];
+test_pairs=[linspace(52,78,78-52+1),linspace(85,103,103-85+1)];
+% p1_pixel=p1_pixel_all(:,valid_pairs);
+% p2_pixel=p2_pixel_all(:,valid_pairs);
+p1=p1_all(:,valid_pairs);
+p2=p2_all(:,valid_pairs);
+R_gt=R12;
+T_gt=T12./norm(T12);
+e1_gt=R_gt'*T_gt;
+e1_gt=e1_gt/e1_gt(3);
+e2_gt=T_gt/T_gt(3);
+if K1==K2
+    K=K1;
+    invK=inv(K);
+end
+k1=2;
+e1s_sph=setup_2Dmesh(k1);
+top_frac=0.06;
+train_ptsnum=length(valid_pairs);
+test_ptsnum=length(test_pairs);
+PSruns=1;
+diff_amplifier=1000000;
+options=optimset('MaxFunEvals',10000,'MaxIter',100000,'TolFun',1e-4);
+pt1=p1(:,1);
+pt2=p1(:,2);
+pt3=p2(:,1);
+pt4=p2(:,2);
+epi12_sph=setup_3Dmesh2(e1s_sph,ceil(size(e1s_sph,2)/4),pt1,pt2,pt3,pt4);
+[GDRE_R,GDRE_T,results2]=episearch(epi12_sph,p1_pixel_all(:,valid_pairs),p2_pixel_all(:,valid_pairs),train_ptsnum,top_frac,PSruns,'GD','RE','pix',diff_amplifier,options,K);
+[PSRE_R,PSRE_T,results4]=episearch(epi12_sph,p1_pixel_all(:,valid_pairs),p2_pixel_all(:,valid_pairs),train_ptsnum,top_frac,PSruns,'PS','RE','pix',diff_amplifier,options,K);
+[fiveptR,fiveptT]=fivept_RT(p1_pixel_all(:,valid_pairs),p2_pixel_all(:,valid_pairs),train_ptsnum,K);
+% GDRE_reproj_errs=epipole_corrs_to_RE2(results2(1,1:4),p1_pixel_all(:,test_pairs),p2_pixel_all(:,test_pairs),test_ptsnum,'m',K);
+% PSRE_reproj_errs=epipole_corrs_to_RE2(results4(1,1:4),p1_pixel_all(:,test_pairs),p2_pixel_all(:,test_pairs),test_ptsnum,'m',K);
+
+GDRE_reproj_errs=compute_reprojection_error_all(GDRE_R,GDRE_T,p1_pixel_all(:,test_pairs),p2_pixel_all(:,test_pairs),test_ptsnum,K);
+PSRE_reproj_errs=compute_reprojection_error_all(PSRE_R,PSRE_T,p1_pixel_all(:,test_pairs),p2_pixel_all(:,test_pairs),test_ptsnum,K);
+fivept_reproj_errs=compute_reprojection_error_all(fiveptR,fiveptT,p1_pixel_all(:,test_pairs),p2_pixel_all(:,test_pairs),test_ptsnum,K);
+GDRE_RE_avg=sum(GDRE_reproj_errs)/test_ptsnum;
+PSRE_RE_avg=sum(PSRE_reproj_errs)/test_ptsnum;
+fivept_RE_avg=sum(fivept_reproj_errs)/test_ptsnum;

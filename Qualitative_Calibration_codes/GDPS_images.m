@@ -1,0 +1,25 @@
+imdir1="/Users/tianqitang/CV_Research/images/imagePair1/Resizerect_001_0_r5000.png";
+imdir2="/Users/tianqitang/CV_Research/images/imagePair1/Resizerect_002_0_r5000.png";
+load('/Users/tianqitang/CV_Research/images/imagePair1/Data12.mat')
+im1=imread(imdir1);
+im2=imread(imdir2);
+im1=rgb2gray(im1);
+im2=rgb2gray(im2);
+I1=single(im1);
+I2=single(im2);
+[f1,d1] = vl_sift(I1);
+[f2,d2] = vl_sift(I2);
+[matches,scores]=vl_ubcmatch(d1,d2);
+p1=f1(1:2,matches(1,:));
+p2=f2(1:2,matches(2,:));
+p1=[p1;ones(1,size(p1,2))];
+p2=[p2;ones(1,size(p2,2))];
+ptsnum=30;
+e2=T12./T12(3);
+e1=R12'*e2;
+e1=e1./e1(3);
+[e1_sph(1),e1_sph(2)]=implane2imsphere(e1);
+[e2_sph(1),e1_sph(2)]=implane2imsphere(e2);
+e1_sph=e1_sph.*180./pi;
+e2_sph=e2_sph.*180./pi;
+sorted_xstd=PS_image(p1,p2,ptsnum);
